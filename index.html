@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K Shakil Rana - Notepad </title>
-    
-    <!-- External Libraries -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AeroNote - Secure Notepad</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Telegram Web App SDK for Bot Integration -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
-        /* CSS Variables - Premium Blue & White Theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         :root {
-            --bg-body: #F4F7FB;
+            --bg-page: #F4F7FB;
             --bg-panel: #FFFFFF;
             --primary: #0052FF;
             --primary-hover: #0043D1;
@@ -24,640 +23,1238 @@
             --text-muted: #64748B;
             --border: #E2E8F0;
             --danger: #EF4444;
-            --warning: #F59E0B;
             --success: #10B981;
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
             --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05);
-            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
-            --radius: 12px;
+            --radius-card: 14px;
         }
-
-        /* Base Reset */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
-        button { cursor: pointer; border: none; background: none; color: inherit; outline: none; transition: 0.2s; }
-        input, select { font-family: inherit; outline: none; text-decoration: none; }
-        
-        /* Custom Scrollbar */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+        button { cursor: pointer; border: none; background: none; }
+        input, select { font-family: inherit; outline: none; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
-        /* --- 3-Pane Layout --- */
-        
-        /* 1. Sidebar */
-        .sidebar { width: 240px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 16px; z-index: 10; flex-shrink: 0; }
-        .logo { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 30px; display: flex; align-items: center; gap: 10px; padding: 0 10px; }
+        /* Auth Pages (Login & Signup) */
+        .auth-page {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .auth-card {
+            background: white;
+            border-radius: 40px;
+            padding: 32px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+        }
+        .login-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 28px;
+            border-bottom: 2px solid var(--border);
+        }
+        .login-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: 0.2s;
+        }
+        .login-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .form-pane {
+            display: none;
+        }
+        .form-pane.active {
+            display: block;
+        }
+        .input-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+        .input-group label {
+            font-size: 13px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            padding-right: 45px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 15px;
+            background: white;
+        }
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,82,255,0.1);
+        }
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            bottom: 14px;
+            cursor: pointer;
+            color: var(--text-muted);
+            background: white;
+            padding: 0 5px;
+            font-size: 16px;
+        }
+        .phone-row { display: flex; gap: 10px; }
+        .phone-row select { width: 120px; padding-right: 10px; }
+        .phone-row input { flex: 1; }
+        .login-btn {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 8px;
+            transition: 0.2s;
+        }
+        .login-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .toggle-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        .error-msg {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+        .strength-bar {
+            height: 4px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        .strength-fill {
+            height: 4px;
+            border-radius: 4px;
+            width: 0%;
+            transition: 0.2s;
+        }
+        .strength-text {
+            font-size: 11px;
+            margin-top: 4px;
+        }
+        .hidden { display: none !important; }
+
+        /* Main App (unchanged) */
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .sidebar {
+            width: 260px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 0 10px;
+        }
         .logo i { color: var(--primary); font-size: 24px; }
-        
-        .nav-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; margin: 15px 0 5px 10px; }
-        .nav-item { padding: 10px 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 14px; color: var(--text-muted); margin-bottom: 4px; text-decoration: none; }
-        .nav-item:hover { background: var(--bg-body); color: var(--text-main); }
-        .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+        .nav-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin: 15px 0 5px 10px;
+        }
+        .nav-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .nav-item:hover { background: var(--bg-page); color: var(--text-main); }
+        .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
         .nav-item i { width: 18px; text-align: center; font-size: 16px; }
         .sidebar-spacer { flex-grow: 1; }
-
-        /* Unique Telegram Button Design */
-        .telegram-btn { margin-top: 10px; background: #F8FAFC; border: 1px dashed #0088cc; color: #0088cc; justify-content: center; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
-        .telegram-btn:hover { background: #E6F3FA; border-color: #0088cc; transform: translateY(-2px); box-shadow: var(--shadow-sm); color: #0088cc; }
-        .telegram-btn i { color: #0088cc; font-size: 18px; }
-
-        /* Download System Button */
-        .download-btn { color: var(--primary); background: var(--primary-light); font-weight: 600; }
-        .download-btn:hover { background: var(--primary); color: white; }
-
-        /* Download Modal Styles */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; }
-        .modal-content { background: var(--bg-panel); width: 90%; max-width: 400px; border-radius: 16px; padding: 24px; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { font-size: 18px; font-weight: 700; color: var(--text-main); }
-        .close-modal-btn { background: var(--bg-body); width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-muted); }
-        .close-modal-btn:hover { background: var(--danger); color: white; }
-        
-        .download-options { display: flex; flex-direction: column; gap: 10px; }
-        .dl-option-btn { background: var(--bg-body); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 14px; color: var(--text-main); transition: 0.2s; }
-        .dl-option-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); transform: translateX(5px); }
-        .dl-option-btn i { font-size: 16px; color: var(--primary); }
-
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* 2. Note List Pane */
-        .list-pane { width: 320px; background: var(--bg-body); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
-        .list-header { padding: 20px 20px 10px 20px; }
-        .list-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .list-title { font-size: 18px; font-weight: 600; }
-        
-        .create-btn { background: var(--primary); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm); }
-        .create-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
-
-        .search-box { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; box-shadow: var(--shadow-sm); }
-        .search-box i { color: var(--text-muted); }
-        .search-box input { border: none; background: none; width: 100%; font-size: 14px; color: var(--text-main); }
-
-        .notes-list { flex-grow: 1; overflow-y: auto; padding: 10px 20px 20px 20px; display: flex; flex-direction: column; gap: 10px; }
-        
-        /* Note Card */
-        .note-card { background: var(--bg-panel); padding: 16px; border-radius: var(--radius); cursor: pointer; border: 1px solid transparent; box-shadow: var(--shadow-sm); transition: 0.2s; position: relative; overflow: hidden; }
-        .note-card:hover { border-color: var(--border); box-shadow: var(--shadow-md); }
-        .note-card.selected { background: var(--primary-light); border-color: var(--primary); }
-        
-        .note-card-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
-        .note-card-title { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 20px; }
-        .note-card-preview { font-size: 13px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; line-height: 1.5; }
-        .note-card-meta { font-size: 11px; color: #94A3B8; font-weight: 500; }
-        
-        .pin-indicator { position: absolute; top: 16px; right: 16px; color: var(--primary); font-size: 12px; }
-
-        /* 3. Editor Pane */
-        .editor-pane { flex-grow: 1; background: var(--bg-panel); display: flex; flex-direction: column; position: relative; }
-        
-        /* Blank State */
-        .blank-state { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-body); z-index: 5; color: var(--text-muted); text-align: center; }
-        .blank-state i { font-size: 60px; color: #CBD5E1; margin-bottom: 20px; }
-        .blank-state h2 { font-size: 20px; color: var(--text-main); margin-bottom: 10px; }
-        .blank-state-btn { margin-top: 20px; padding: 10px 20px; background: var(--primary); color: white; border-radius: 8px; font-weight: 500; }
-
-        /* Editor Header (Toolbar & Sync Status) */
-        .editor-header { padding: 15px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); }
-        
-        .editor-actions { display: flex; gap: 8px; }
-        .action-btn { width: 32px; height: 32px; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: var(--text-muted); border: 1px solid transparent; }
-        .action-btn:hover { background: var(--bg-body); color: var(--text-main); border-color: var(--border); }
-        .action-btn.active { color: var(--primary); background: var(--primary-light); }
-
-        .sync-status { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); padding: 5px 12px; border-radius: 20px; background: var(--bg-body); }
-        .sync-status.syncing { color: var(--primary); }
-        .sync-status.saved { color: var(--success); }
-        
-        /* Editor Content Area */
-        .editor-body { flex-grow: 1; padding: 40px 60px; overflow-y: auto; }
-        
-        .editor-title-input { width: 100%; font-size: 32px; font-weight: 700; color: var(--text-main); border: none; background: none; margin-bottom: 20px; padding: 0; }
-        .editor-title-input::placeholder { color: #CBD5E1; }
-        
-        .editor-content { min-height: 60vh; font-size: 16px; line-height: 1.7; color: #334155; outline: none; }
-        .editor-content[placeholder]:empty:before { content: attr(placeholder); color: #94A3B8; pointer-events: none; display: block; }
-        .editor-content img { max-width: 100%; border-radius: 8px; margin: 10px 0; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-        
-        .editor-tags-input { width: 100%; border: none; font-size: 13px; color: var(--primary); background: transparent; margin-top: 40px; padding-top: 20px; border-top: 1px dashed var(--border); }
-        .editor-tags-input::placeholder { color: #94A3B8; }
-
-        /* Formatting Toolbar */
-        .format-toolbar { display: flex; gap: 5px; padding: 10px 30px; border-bottom: 1px solid var(--border); background: #FAFCFF; flex-wrap: wrap; }
-        .format-btn { padding: 6px 10px; border-radius: 6px; font-size: 14px; color: var(--text-muted); }
-        .format-btn:hover { background: var(--primary-light); color: var(--primary); }
-        .format-divider { width: 1px; background: var(--border); margin: 0 5px; }
-
-        /* Mobile Adjustments */
+        .user-info {
+            margin-top: auto;
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .backup-btns {
+            display: flex;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .backup-btn {
+            flex: 1;
+            background: var(--bg-page);
+            padding: 6px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+        }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        .telegram-btn {
+            margin-top: 10px;
+            background: #F8FAFC;
+            border: 1px dashed #0088cc;
+            color: #0088cc;
+            justify-content: center;
+        }
+        .list-pane {
+            width: 320px;
+            background: var(--bg-page);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .list-header {
+            padding: 20px 20px 10px 20px;
+        }
+        .list-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .list-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .create-btn {
+            background: var(--primary);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .search-box input {
+            border: none;
+            background: none;
+            width: 100%;
+            font-size: 14px;
+        }
+        .notes-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .note-card {
+            background: var(--bg-panel);
+            padding: 16px;
+            border-radius: var(--radius-card);
+            cursor: pointer;
+            border: 1px solid transparent;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+        .note-card.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+        .note-card-title {
+            font-weight: 600;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 20px;
+        }
+        .note-card-preview {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .note-card-meta {
+            font-size: 11px;
+            color: #94A3B8;
+        }
+        .pin-indicator {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: var(--primary);
+            font-size: 12px;
+        }
+        .editor-pane {
+            flex-grow: 1;
+            background: var(--bg-panel);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .blank-state {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-page);
+            z-index: 5;
+            text-align: center;
+        }
+        .editor-header {
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .editor-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+        }
+        .action-btn.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: var(--bg-page);
+        }
+        .format-toolbar {
+            display: flex;
+            gap: 5px;
+            padding: 10px 30px;
+            border-bottom: 1px solid var(--border);
+            background: #FAFCFF;
+            flex-wrap: wrap;
+        }
+        .format-btn {
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: var(--text-muted);
+            background: none;
+            cursor: pointer;
+        }
+        .format-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .editor-body {
+            flex-grow: 1;
+            padding: 40px 60px;
+            overflow-y: auto;
+        }
+        .editor-title-input {
+            width: 100%;
+            font-size: 32px;
+            font-weight: 700;
+            border: none;
+            background: none;
+            margin-bottom: 20px;
+        }
+        .editor-content {
+            min-height: 60vh;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #334155;
+            outline: none;
+        }
+        .editor-tags-input {
+            width: 100%;
+            border: none;
+            font-size: 13px;
+            color: var(--primary);
+            background: transparent;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border);
+        }
         .mobile-back, .mobile-menu-btn { display: none; }
-
         @media (max-width: 900px) {
-            .sidebar { position: fixed; left: -100%; height: 100%; transition: 0.3s; box-shadow: var(--shadow-md); }
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                height: 100%;
+                transition: 0.3s;
+                box-shadow: var(--shadow-md);
+                background: white;
+            }
             .sidebar.open { left: 0; }
-            
             .list-pane { width: 100%; }
-            .editor-pane { position: fixed; top: 0; left: 100%; width: 100%; height: 100%; transition: 0.3s; z-index: 20; }
+            .editor-pane {
+                position: fixed;
+                top: 0;
+                left: 100%;
+                width: 100%;
+                height: 100%;
+                transition: 0.3s;
+                z-index: 20;
+                background: white;
+            }
             .editor-pane.open { left: 0; }
-            
             .mobile-back, .mobile-menu-btn { display: flex; margin-right: 10px; }
             .editor-body { padding: 20px; }
             .editor-title-input { font-size: 24px; }
-            .format-toolbar { padding: 10px; overflow-x: auto; flex-wrap: nowrap; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Download Modal System -->
-    <div class="modal-overlay" id="downloadModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Download System</h3>
-                <button class="close-modal-btn" onclick="toggleDownloadModal(false)">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="auth-page">
+    <div class="auth-card">
+        <div class="login-tabs">
+            <div class="login-tab active" data-tab="phone">📱 Phone Login</div>
+            <div class="login-tab" data-tab="email">✉️ Email Login</div>
+        </div>
+        <!-- Phone Login Pane -->
+        <div id="phoneLoginPane" class="form-pane active">
+            <i class="fa-solid fa-mobile-alt" style="font-size:48px; color:var(--primary); display:block; text-align:center; margin-bottom:16px;"></i>
+            <h2 style="text-align:center;">Phone Login</h2>
+            <div class="input-group">
+                <label>WhatsApp Number</label>
+                <div class="phone-row">
+                    <select id="loginPhoneCountryCode">
+                        <option value="+880">🇧🇩 +880 (Bangladesh)</option>
+                        <option value="+91">🇮🇳 +91 (India)</option>
+                        <option value="+92">🇵🇰 +92 (Pakistan)</option>
+                        <option value="+977">🇳🇵 +977 (Nepal)</option>
+                        <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
+                        <option value="+86">🇨🇳 +86 (China)</option>
+                        <option value="+81">🇯🇵 +81 (Japan)</option>
+                        <option value="+82">🇰🇷 +82 (South Korea)</option>
+                        <option value="+966">🇸🇦 +966 (Saudi Arabia)</option>
+                        <option value="+971">🇦🇪 +971 (UAE)</option>
+                        <option value="+44">🇬🇧 +44 (UK)</option>
+                        <option value="+33">🇫🇷 +33 (France)</option>
+                        <option value="+49">🇩🇪 +49 (Germany)</option>
+                        <option value="+39">🇮🇹 +39 (Italy)</option>
+                        <option value="+34">🇪🇸 +34 (Spain)</option>
+                        <option value="+7">🇷🇺 +7 (Russia)</option>
+                        <option value="+1">🇺🇸 +1 (USA/Canada)</option>
+                        <option value="+52">🇲🇽 +52 (Mexico)</option>
+                        <option value="+55">🇧🇷 +55 (Brazil)</option>
+                        <option value="+54">🇦🇷 +54 (Argentina)</option>
+                        <option value="+51">🇵🇪 +51 (Peru)</option>
+                        <option value="+56">🇨🇱 +56 (Chile)</option>
+                        <option value="+20">🇪🇬 +20 (Egypt)</option>
+                        <option value="+234">🇳🇬 +234 (Nigeria)</option>
+                        <option value="+27">🇿🇦 +27 (South Africa)</option>
+                        <option value="+254">🇰🇪 +254 (Kenya)</option>
+                        <option value="+61">🇦🇺 +61 (Australia)</option>
+                        <option value="+64">🇳🇿 +64 (New Zealand)</option>
+                        <option value="+679">🇫🇯 +679 (Fiji)</option>
+                    </select>
+                    <input type="tel" id="loginPhoneNumber" placeholder="1234567890">
+                </div>
             </div>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
-                Select a category to download. Your backup will be downloaded here and sent to your Telegram bot.
-            </p>
-            <div class="download-options">
-                <button class="dl-option-btn" onclick="executeDownload('all')">
-                    <i class="fa-solid fa-layer-group"></i> All Notes
-                </button>
-                <button class="dl-option-btn" onclick="executeDownload('pinned')">
-                    <i class="fa-solid fa-thumbtack"></i> Pinned Notes
-                </button>
-                <button class="dl-option-btn" onclick="executeDownload('favorites')">
-                    <i class="fa-solid fa-heart"></i> Favorite Notes
-                </button>
-                <button class="dl-option-btn" onclick="executeDownload('work')">
-                    <i class="fa-solid fa-briefcase"></i> Work Notes
-                </button>
-                <button class="dl-option-btn" onclick="executeDownload('personal')">
-                    <i class="fa-solid fa-user"></i> Personal Notes
-                </button>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginPhonePassword" placeholder="••••••">
+                <span class="password-toggle" onclick="togglePassword('loginPhonePassword')"><i class="fa-regular fa-eye-slash"></i></span>
             </div>
+            <button class="login-btn" onclick="handlePhoneLogin()">Login with Phone</button>
+            <div class="toggle-link" onclick="showSignupPage()">Create new account</div>
+            <div class="toggle-link" onclick="showForgotPassword()">Forgot Password?</div>
+            <div id="phoneLoginError" class="error-msg"></div>
+        </div>
+        <!-- Email Login Pane -->
+        <div id="emailLoginPane" class="form-pane">
+            <i class="fa-regular fa-envelope" style="font-size:48px; color:var(--primary); display:block; text-align:center; margin-bottom:16px;"></i>
+            <h2 style="text-align:center;">Email Login</h2>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" placeholder="you@example.com">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginEmailPassword" placeholder="••••••">
+                <span class="password-toggle" onclick="togglePassword('loginEmailPassword')"><i class="fa-regular fa-eye-slash"></i></span>
+            </div>
+            <button class="login-btn" onclick="handleEmailLogin()">Login with Email</button>
+            <div class="toggle-link" onclick="showSignupPage()">Create new account</div>
+            <div class="toggle-link" onclick="showForgotPassword()">Forgot Password?</div>
+            <div id="emailLoginError" class="error-msg"></div>
+        </div>
+        <!-- Forgot Password Pane -->
+        <div id="forgotFormPane" class="form-pane">
+            <i class="fa-solid fa-key" style="font-size:48px; color:var(--primary); text-align:center; display:block;"></i>
+            <h2 style="text-align:center;">Reset Password</h2>
+            <p>Enter your registered email address</p>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="forgotEmail" placeholder="you@example.com">
+            </div>
+            <button class="login-btn" onclick="sendResetLink()">Send Reset Link</button>
+            <div class="toggle-link" onclick="showLoginPane()">Back to Login</div>
+            <div id="forgotError" class="error-msg"></div>
+        </div>
+        <!-- Reset Password Pane -->
+        <div id="resetFormPane" class="form-pane">
+            <h2 style="text-align:center;">Set New Password</h2>
+            <div class="input-group">
+                <label>New Password</label>
+                <input type="password" id="newPassword" onkeyup="checkResetStrength()">
+                <span class="password-toggle" onclick="togglePassword('newPassword')"><i class="fa-regular fa-eye-slash"></i></span>
+                <div class="strength-bar"><div class="strength-fill" id="resetStrengthFill"></div></div>
+                <div class="strength-text" id="resetStrengthText"></div>
+            </div>
+            <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmNewPassword">
+                <span class="password-toggle" onclick="togglePassword('confirmNewPassword')"><i class="fa-regular fa-eye-slash"></i></span>
+            </div>
+            <button class="login-btn" onclick="resetPasswordConfirm()">Reset Password</button>
+            <div class="toggle-link" onclick="showLoginPane()">Cancel</div>
+            <div id="resetError" class="error-msg"></div>
         </div>
     </div>
+</div>
 
-    <!-- Pane 1: Sidebar -->
-    <nav class="sidebar" id="sidebar">
-        <div class="logo">
-            <i class="fa-solid fa-feather"></i> Notepad
+<!-- SIGNUP PAGE (separate) -->
+<div id="signupPage" class="auth-page hidden">
+    <div class="auth-card">
+        <i class="fa-solid fa-user-plus" style="font-size:48px; color:var(--primary); text-align:center; display:block; margin-bottom:16px;"></i>
+        <h2 style="text-align:center;">Create Account</h2>
+        <div class="input-group"><label>First Name</label><input type="text" id="regFirstName"></div>
+        <div class="input-group"><label>Last Name</label><input type="text" id="regLastName"></div>
+        <div class="input-group">
+            <label>WhatsApp Number</label>
+            <div class="phone-row">
+                <select id="regCountryCode">
+                    <option value="+880">🇧🇩 +880 (Bangladesh)</option>
+                    <option value="+91">🇮🇳 +91 (India)</option>
+                    <option value="+92">🇵🇰 +92 (Pakistan)</option>
+                    <option value="+977">🇳🇵 +977 (Nepal)</option>
+                    <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
+                    <option value="+86">🇨🇳 +86 (China)</option>
+                    <option value="+81">🇯🇵 +81 (Japan)</option>
+                    <option value="+82">🇰🇷 +82 (South Korea)</option>
+                    <option value="+966">🇸🇦 +966 (Saudi Arabia)</option>
+                    <option value="+971">🇦🇪 +971 (UAE)</option>
+                    <option value="+44">🇬🇧 +44 (UK)</option>
+                    <option value="+33">🇫🇷 +33 (France)</option>
+                    <option value="+49">🇩🇪 +49 (Germany)</option>
+                    <option value="+39">🇮🇹 +39 (Italy)</option>
+                    <option value="+34">🇪🇸 +34 (Spain)</option>
+                    <option value="+7">🇷🇺 +7 (Russia)</option>
+                    <option value="+1">🇺🇸 +1 (USA/Canada)</option>
+                    <option value="+52">🇲🇽 +52 (Mexico)</option>
+                    <option value="+55">🇧🇷 +55 (Brazil)</option>
+                    <option value="+54">🇦🇷 +54 (Argentina)</option>
+                    <option value="+51">🇵🇪 +51 (Peru)</option>
+                    <option value="+56">🇨🇱 +56 (Chile)</option>
+                    <option value="+20">🇪🇬 +20 (Egypt)</option>
+                    <option value="+234">🇳🇬 +234 (Nigeria)</option>
+                    <option value="+27">🇿🇦 +27 (South Africa)</option>
+                    <option value="+254">🇰🇪 +254 (Kenya)</option>
+                    <option value="+61">🇦🇺 +61 (Australia)</option>
+                    <option value="+64">🇳🇿 +64 (New Zealand)</option>
+                    <option value="+679">🇫🇯 +679 (Fiji)</option>
+                </select>
+                <input type="tel" id="regPhoneNumber" placeholder="1234567890">
+            </div>
         </div>
-        
-        <div class="nav-label">Menu</div>
-        <button class="nav-item active" onclick="setFilter('all', this)">
-            <i class="fa-solid fa-layer-group"></i> All Notes
-        </button>
-        <button class="nav-item" onclick="setFilter('pinned', this)">
-            <i class="fa-solid fa-thumbtack"></i> Pinned
-        </button>
-        <button class="nav-item" onclick="setFilter('favorites', this)">
-            <i class="fa-solid fa-heart"></i> Favorites
-        </button>
-        
-        <div class="nav-label">Organization</div>
-        <button class="nav-item" onclick="setFilter('work', this)">
-            <i class="fa-solid fa-briefcase"></i> Work
-        </button>
-        <button class="nav-item" onclick="setFilter('personal', this)">
-            <i class="fa-solid fa-user"></i> Personal
-        </button>
-        
-        <!-- Advanced Download System Button -->
-        <button class="nav-item download-btn" onclick="toggleDownloadModal(true)" style="margin-top: 10px;">
-            <i class="fa-solid fa-cloud-arrow-down"></i> Download System
-        </button>
-        
-        <div class="sidebar-spacer"></div>
-        
-        <!-- Telegram Channel Button -->
-        <a href="https://t.me/TechCommunitys" target="_blank" class="nav-item telegram-btn" title="Join our Telegram Channel">
-            <i class="fa-brands fa-telegram"></i> Telegram Channel
-        </a>
-    </nav>
+        <div class="input-group"><label>Email (required for password reset)</label><input type="email" id="regEmail"></div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="regPassword" onkeyup="checkPasswordStrength()">
+            <span class="password-toggle" onclick="togglePassword('regPassword')"><i class="fa-regular fa-eye-slash"></i></span>
+            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            <div class="strength-text" id="strengthText"></div>
+        </div>
+        <div class="input-group">
+            <label>Confirm Password</label>
+            <input type="password" id="regConfirmPassword">
+            <span class="password-toggle" onclick="togglePassword('regConfirmPassword')"><i class="fa-regular fa-eye-slash"></i></span>
+        </div>
+        <button class="login-btn" onclick="handleRegister()">Register</button>
+        <div class="toggle-link" onclick="showLoginPage()">Back to Login</div>
+        <div id="regError" class="error-msg"></div>
+    </div>
+</div>
 
-    <!-- Pane 2: Note List -->
+<!-- MAIN APP -->
+<div class="app-container hidden" id="appContainer">
+    <nav class="sidebar" id="sidebar">
+        <div class="logo"><i class="fa-solid fa-feather"></i> AeroNote Pro</div>
+        <div class="nav-label">Menu</div>
+        <button class="nav-item active" data-filter="all" onclick="setFilter('all', this)"><i class="fa-solid fa-layer-group"></i> All Notes</button>
+        <button class="nav-item" data-filter="pinned" onclick="setFilter('pinned', this)"><i class="fa-solid fa-thumbtack"></i> Pinned</button>
+        <button class="nav-item" data-filter="favorites" onclick="setFilter('favorites', this)"><i class="fa-solid fa-heart"></i> Favorites</button>
+        <div class="nav-label">Organization</div>
+        <button class="nav-item" data-filter="work" onclick="setFilter('work', this)"><i class="fa-solid fa-briefcase"></i> Work</button>
+        <button class="nav-item" data-filter="personal" onclick="setFilter('personal', this)"><i class="fa-solid fa-user"></i> Personal</button>
+        <div class="user-info">
+            <i class="fa-brands fa-whatsapp"></i> <span id="userPhoneDisplay"></span><br>
+            <i class="fa-regular fa-envelope"></i> <span id="userEmailDisplay"></span><br>
+            <span id="userNameDisplay"></span>
+            <div class="backup-btns">
+                <div class="backup-btn" onclick="exportAllAsTxt()"><i class="fa-solid fa-file-lines"></i> TXT Backup</div>
+                <div class="backup-btn" onclick="triggerImport()"><i class="fa-solid fa-upload"></i> Restore TXT</div>
+            </div>
+            <input type="file" id="importFile" accept=".txt" style="display:none;" onchange="importFromTxt(event)">
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+        </div>
+        <div class="sidebar-spacer"></div>
+        <a href="https://t.me/TechCommunitys" target="_blank" class="nav-item telegram-btn"><i class="fa-brands fa-telegram"></i> Telegram Channel</a>
+    </nav>
     <div class="list-pane">
         <div class="list-header">
             <div class="list-title-row">
-                <div style="display: flex; align-items: center;">
+                <div style="display:flex; align-items:center;">
                     <button class="mobile-menu-btn action-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                     <span class="list-title" id="listTitle">All Notes</span>
                 </div>
-                <button class="create-btn" onclick="createNewNote()" title="New Note">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
+                <button class="create-btn" onclick="createNewNote()"><i class="fa-solid fa-plus"></i></button>
             </div>
             <div class="search-box">
                 <i class="fa-solid fa-search"></i>
                 <input type="text" id="searchInput" placeholder="Search notes..." oninput="renderNotes()">
             </div>
         </div>
-        <div class="notes-list" id="notesList">
-            <!-- Notes injected here via JS -->
-        </div>
+        <div class="notes-list" id="notesList"></div>
     </div>
-
-    <!-- Pane 3: Editor -->
     <div class="editor-pane" id="editorPane">
-        
-        <!-- Blank State -->
         <div class="blank-state" id="blankState">
             <i class="fa-regular fa-file-lines"></i>
             <h2>Select a note to view</h2>
             <p>Or create a new note to start capturing your ideas.</p>
             <button class="blank-state-btn" onclick="createNewNote()">Create New Note</button>
         </div>
-
-        <!-- Editor Toolbar -->
         <div class="editor-header">
-            <div style="display: flex; align-items: center;">
+            <div style="display:flex; align-items:center;">
                 <button class="mobile-back action-btn" onclick="closeEditorMobile()"><i class="fa-solid fa-arrow-left"></i></button>
                 <div class="editor-actions">
-                    <button class="action-btn" id="btnPin" onclick="toggleActiveNoteProp('isPinned')" title="Pin Note"><i class="fa-solid fa-thumbtack"></i></button>
-                    <button class="action-btn" id="btnFav" onclick="toggleActiveNoteProp('isFavorite')" title="Favorite"><i class="fa-solid fa-heart"></i></button>
-                    <button class="action-btn" onclick="deleteActiveNote()" title="Delete" style="color: var(--danger);"><i class="fa-solid fa-trash"></i></button>
+                    <button class="action-btn" id="btnPin" onclick="toggleActiveNoteProp('isPinned')"><i class="fa-solid fa-thumbtack"></i></button>
+                    <button class="action-btn" id="btnFav" onclick="toggleActiveNoteProp('isFavorite')"><i class="fa-solid fa-heart"></i></button>
+                    <button class="action-btn" onclick="downloadSingleNoteTxt()"><i class="fa-solid fa-download"></i></button>
+                    <button class="action-btn" onclick="deleteActiveNote()" style="color:var(--danger);"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
-            
-            <!-- Real-time Sync Indicator -->
-            <div class="sync-status" id="syncStatus">
-                <i class="fa-solid fa-cloud-check"></i> Saved
-            </div>
+            <div class="sync-status" id="syncStatus"><i class="fa-solid fa-cloud-check"></i> Saved</div>
         </div>
-
         <div class="format-toolbar">
-            <button class="format-btn" onclick="formatText('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
-            <button class="format-btn" onclick="formatText('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
-            <button class="format-btn" onclick="formatText('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
-            <div class="format-divider"></div>
-            <button class="format-btn" onclick="formatText('formatBlock', 'H1')" title="Heading 1">H1</button>
-            <button class="format-btn" onclick="formatText('formatBlock', 'H2')" title="Heading 2">H2</button>
-            <div class="format-divider"></div>
-            <button class="format-btn" onclick="formatText('insertUnorderedList')" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-            <button class="format-btn" onclick="formatText('insertOrderedList')" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
-            <div class="format-divider"></div>
-            
-            <!-- Direct Image Upload System -->
-            <button class="format-btn" onclick="triggerImageUpload()" title="Upload Image">
-                <i class="fa-regular fa-image"></i>
-            </button>
-            <!-- Hidden Input for selecting image files from device -->
-            <input type="file" id="imageUploadInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            
-            <button class="format-btn" onclick="insertLinkPrompt()" title="Insert Link"><i class="fa-solid fa-link"></i></button>
+            <button class="format-btn" onclick="formatText('bold')"><i class="fa-solid fa-bold"></i></button>
+            <button class="format-btn" onclick="formatText('italic')"><i class="fa-solid fa-italic"></i></button>
+            <button class="format-btn" onclick="formatText('underline')"><i class="fa-solid fa-underline"></i></button>
+            <button class="format-btn" onclick="formatText('formatBlock', 'H1')">H1</button>
+            <button class="format-btn" onclick="formatText('formatBlock', 'H2')">H2</button>
+            <button class="format-btn" onclick="formatText('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i></button>
+            <button class="format-btn" onclick="formatText('insertOrderedList')"><i class="fa-solid fa-list-ol"></i></button>
+            <button class="format-btn" onclick="triggerImageUpload()"><i class="fa-regular fa-image"></i></button>
+            <input type="file" id="imageUploadInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+            <button class="format-btn" onclick="insertLinkPrompt()"><i class="fa-solid fa-link"></i></button>
         </div>
-
-        <!-- Content Area -->
         <div class="editor-body">
             <input type="text" id="editorTitle" class="editor-title-input" placeholder="Note Title">
-            <div id="editorContent" class="editor-content" contenteditable="true" placeholder="Start typing here..."></div>
+            <div id="editorContent" class="editor-content" contenteditable="true"></div>
             <input type="text" id="editorTags" class="editor-tags-input" placeholder="# Add tags separated by comma (e.g. work, ideas)">
         </div>
     </div>
+</div>
 
-    <script>
-        // Initialize Telegram Web App SDK
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Expand Web App to full height
+<script>
+    const tg = window.Telegram.WebApp;
+    if(tg) tg.expand();
 
-        // Data structure
-        let notes = JSON.parse(localStorage.getItem('aeronote_data')) ||[];
-        let activeNoteId = null;
-        let currentFilter = 'all';
-        let typingTimer;
-        const typingDelay = 800; // ms to wait after typing stops before saving
+    let currentUserKey = null;
+    let notes = [];
+    let activeNoteId = null;
+    let currentFilter = 'all';
+    let typingTimer;
+    const typingDelay = 800;
 
-        // DOM Elements
-        const notesListEl = document.getElementById('notesList');
-        const searchInput = document.getElementById('searchInput');
-        const blankState = document.getElementById('blankState');
-        const editorTitle = document.getElementById('editorTitle');
-        const editorContent = document.getElementById('editorContent');
-        const editorTags = document.getElementById('editorTags');
-        const syncStatus = document.getElementById('syncStatus');
-        const editorPane = document.getElementById('editorPane');
-        const sidebar = document.getElementById('sidebar');
-        const downloadModal = document.getElementById('downloadModal');
+    // Helper: get full phone from country code + number
+    function getFullPhone(code, num) { return code + num.replace(/\D/g, ''); }
 
-        // Initial setup
-        window.onload = () => {
-            if(notes.length === 0) {
-                // Add a welcome note
-                notes.push({
-                    id: Date.now().toString(),
-                    title: "Welcome to AeroNote! 🚀",
-                    content: "AeroNote is a premium, beautifully designed workspace.<br><br><b>Features:</b><ul><li><b>No Save Button:</b> Everything saves automatically.</li><li><b>Telegram Bot Integration:</b> Download notes directly and receive backups directly to your Telegram ID automatically.</li><li><b>Direct Image Upload:</b> Easily insert images.</li><li><b>3-Pane Layout:</b> Navigate smoothly.</li></ul><br>Enjoy your clean workspace!",
-                    tags: "welcome, intro",
-                    isPinned: true,
-                    isFavorite: true,
-                    updatedAt: Date.now()
-                });
-                saveToLocalStorage();
-            }
-            renderNotes();
-            setupAutoSave();
-        };
+    function getUsers() { return JSON.parse(localStorage.getItem('aeronote_users_v9') || '{}'); }
+    function saveUsers(users) { localStorage.setItem('aeronote_users_v9', JSON.stringify(users)); }
 
-        // --- Core Functions ---
+    // Password strength
+    function checkPasswordStrength() {
+        const pwd = document.getElementById('regPassword').value;
+        const fill = document.getElementById('strengthFill');
+        const text = document.getElementById('strengthText');
+        let strength = 0;
+        if(pwd.length >= 6) strength++;
+        if(/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
+        if(/[0-9]/.test(pwd)) strength++;
+        if(/[^a-zA-Z0-9]/.test(pwd)) strength++;
+        const percent = (strength/4)*100;
+        fill.style.width = percent+'%';
+        fill.style.backgroundColor = percent<=25?'#EF4444': percent<=50?'#F59E0B': percent<=75?'#3B82F6':'#10B981';
+        text.innerText = percent<=25?'Weak': percent<=50?'Fair': percent<=75?'Good':'Strong';
+    }
+    function checkResetStrength() {
+        const pwd = document.getElementById('newPassword').value;
+        const fill = document.getElementById('resetStrengthFill');
+        const text = document.getElementById('resetStrengthText');
+        if(!fill) return;
+        let strength = 0;
+        if(pwd.length>=6) strength++;
+        if(/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
+        if(/[0-9]/.test(pwd)) strength++;
+        if(/[^a-zA-Z0-9]/.test(pwd)) strength++;
+        const percent = (strength/4)*100;
+        fill.style.width = percent+'%';
+        fill.style.backgroundColor = percent<=25?'#EF4444': percent<=50?'#F59E0B': percent<=75?'#3B82F6':'#10B981';
+        if(text) text.innerText = percent<=25?'Weak': percent<=50?'Fair': percent<=75?'Good':'Strong';
+    }
 
-        function renderNotes() {
-            notesListEl.innerHTML = '';
-            const query = searchInput.value.toLowerCase();
-            
-            let filtered = notes.filter(n => {
-                const matchSearch = n.title.toLowerCase().includes(query) || n.content.toLowerCase().includes(query) || n.tags.toLowerCase().includes(query);
-                if (!matchSearch) return false;
-
-                if (currentFilter === 'pinned') return n.isPinned;
-                if (currentFilter === 'favorites') return n.isFavorite;
-                if (currentFilter === 'work' || currentFilter === 'personal') return n.tags.toLowerCase().includes(currentFilter);
-                return true;
-            });
-
-            filtered.sort((a, b) => {
-                if(a.isPinned && !b.isPinned) return -1;
-                if(!a.isPinned && b.isPinned) return 1;
-                return b.updatedAt - a.updatedAt;
-            });
-
-            if(filtered.length === 0) {
-                let emptyMsg = "No notes found.";
-                notesListEl.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 13px;">${emptyMsg}</div>`;
-            }
-
-            filtered.forEach(note => {
-                const div = document.createElement('div');
-                div.className = `note-card ${note.id === activeNoteId ? 'selected' : ''}`;
-                div.onclick = () => openNote(note.id);
-                
-                const temp = document.createElement('div');
-                temp.innerHTML = note.content;
-                const preview = temp.textContent || temp.innerText || "No additional text...";
-
-                const date = new Date(note.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
-
-                div.innerHTML = `
-                    ${note.isPinned ? '<i class="fa-solid fa-thumbtack pin-indicator"></i>' : ''}
-                    <div class="note-card-header">
-                        <div class="note-card-title">${note.title || 'Untitled Note'}</div>
-                    </div>
-                    <div class="note-card-preview">${preview}</div>
-                    <div class="note-card-meta">${date}</div>
-                `;
-                notesListEl.appendChild(div);
-            });
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const container = field.parentElement;
+        const icon = container.querySelector('.password-toggle i');
+        if(field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
         }
+    }
 
-        function createNewNote() {
-            const newNote = {
-                id: Date.now().toString(),
-                title: "",
-                content: "",
-                tags: "",
-                isPinned: false,
-                isFavorite: false,
-                updatedAt: Date.now()
-            };
-            notes.unshift(newNote);
-            saveToLocalStorage();
-            openNote(newNote.id);
-            editorTitle.focus();
-        }
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
 
-        function openNote(id) {
-            activeNoteId = id;
-            const note = notes.find(n => n.id === id);
-            
-            if(!note) return;
-
-            blankState.style.display = 'none';
-            editorTitle.value = note.title;
-            editorContent.innerHTML = note.content;
-            editorTags.value = note.tags;
-            
-            document.getElementById('btnPin').className = `action-btn ${note.isPinned ? 'active' : ''}`;
-            document.getElementById('btnFav').className = `action-btn ${note.isFavorite ? 'active' : ''}`;
-
-            renderNotes(); 
-            
-            if(window.innerWidth <= 900) {
-                editorPane.classList.add('open');
-            }
-        }
-
-        // --- Real-Time Auto Save Logic ---
-
-        function setupAutoSave() {
-            const fields = [editorTitle, editorContent, editorTags];
-            fields.forEach(field => {
-                field.addEventListener('input', () => {
-                    if(!activeNoteId) return;
-                    
-                    syncStatus.className = 'sync-status syncing';
-                    syncStatus.innerHTML = '<i class="fa-solid fa-cloud-arrow-up fa-fade"></i> Saving...';
-
-                    clearTimeout(typingTimer);
-                    typingTimer = setTimeout(saveActiveNoteData, typingDelay);
-                });
-            });
-        }
-
-        function saveActiveNoteData() {
-            if(!activeNoteId) return;
-            const noteIndex = notes.findIndex(n => n.id === activeNoteId);
-            if(noteIndex === -1) return;
-
-            notes[noteIndex].title = editorTitle.value;
-            notes[noteIndex].content = editorContent.innerHTML;
-            notes[noteIndex].tags = editorTags.value;
-            notes[noteIndex].updatedAt = Date.now();
-
-            saveToLocalStorage();
-            
-            syncStatus.className = 'sync-status saved';
-            syncStatus.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Saved';
-            
-            renderNotes();
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('aeronote_data', JSON.stringify(notes));
-        }
-
-        // --- Actions ---
-
-        function toggleActiveNoteProp(prop) {
-            if(!activeNoteId) return;
-            const note = notes.find(n => n.id === activeNoteId);
-            note[prop] = !note[prop];
-            note.updatedAt = Date.now();
-            saveToLocalStorage();
-            openNote(activeNoteId);
-        }
-
-        function deleteActiveNote() {
-            if(!activeNoteId) return;
-            if(confirm("Are you sure you want to delete this note?")) {
-                notes = notes.filter(n => n.id !== activeNoteId);
-                saveToLocalStorage();
-                activeNoteId = null;
-                blankState.style.display = 'flex';
-                renderNotes();
-                if(window.innerWidth <= 900) closeEditorMobile();
-            }
-        }
-
-        function setFilter(filter, btnElement) {
-            currentFilter = filter;
-            document.querySelectorAll('.sidebar .nav-item:not(.download-btn):not(.telegram-btn)').forEach(el => el.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
-            
-            const titles = {
-                'all': 'All Notes', 'pinned': 'Pinned Notes', 'favorites': 'Favorites', 
-                'work': 'Work Notes', 'personal': 'Personal Notes'
-            };
-            document.getElementById('listTitle').innerText = titles[filter] || 'Notes';
-            
-            renderNotes();
-            if(window.innerWidth <= 900) toggleSidebar();
-        }
-
-        // --- Rich Text Formatting & Direct Image Upload ---
+    // Registration (separate code + number)
+    function handleRegister() {
+        const firstName = document.getElementById('regFirstName').value.trim();
+        const lastName = document.getElementById('regLastName').value.trim();
+        const countryCode = document.getElementById('regCountryCode').value;
+        const phoneRaw = document.getElementById('regPhoneNumber').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const pwd = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regConfirmPassword').value;
         
-        function formatText(command, value = null) {
-            document.execCommand(command, false, value);
-            editorContent.focus();
-            syncStatus.className = 'sync-status syncing';
-            syncStatus.innerHTML = '<i class="fa-solid fa-cloud-arrow-up fa-fade"></i> Saving...';
-            clearTimeout(typingTimer);
-            typingTimer = setTimeout(saveActiveNoteData, typingDelay);
+        if(!firstName || !lastName || !countryCode || !phoneRaw || !pwd || !email) {
+            document.getElementById('regError').innerText = 'All fields are required';
+            return;
         }
-
-        function insertLinkPrompt() {
-            const url = prompt("Enter link URL (e.g., https://google.com):");
-            if(url) formatText('createLink', url);
+        if(!isValidEmail(email)) {
+            document.getElementById('regError').innerText = 'Please enter a valid email address';
+            return;
         }
-
-        function triggerImageUpload() {
-            document.getElementById('imageUploadInput').click();
+        const fullPhone = getFullPhone(countryCode, phoneRaw);
+        if(fullPhone.length < 8) {
+            document.getElementById('regError').innerText = 'Phone number must be at least 8 digits';
+            return;
         }
-
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    formatText('insertImage', e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-            event.target.value = '';
-        }
-
-        // --- Mobile Specific ---
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('open');
-        }
-
-        function closeEditorMobile() {
-            editorPane.classList.remove('open');
-            activeNoteId = null;
-            renderNotes();
-        }
-
-        // --- NEW: Advanced Download System (Telegram Bot Integration) ---
+        if(pwd !== confirm) { document.getElementById('regError').innerText = 'Passwords do not match'; return; }
+        if(pwd.length < 6) { document.getElementById('regError').innerText = 'Password must be at least 6 characters'; return; }
         
-        function toggleDownloadModal(show) {
-            downloadModal.style.display = show ? 'flex' : 'none';
-        }
-
-        async function executeDownload(category) {
-            // Get Telegram UID if available (Default to dummy if outside Telegram)
-            let tgUid = null;
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                tgUid = tg.initDataUnsafe.user.id;
-            }
-
-            // Filter notes based on selected category
-            let exportDataArray =[];
-            if(category === 'all') exportDataArray = notes;
-            else if(category === 'pinned') exportDataArray = notes.filter(n => n.isPinned);
-            else if(category === 'favorites') exportDataArray = notes.filter(n => n.isFavorite);
-            else if(category === 'work' || category === 'personal') exportDataArray = notes.filter(n => n.tags.toLowerCase().includes(category));
-
-            if(exportDataArray.length === 0) {
-                alert("No notes found in this category to download!");
+        const users = getUsers();
+        if(users[fullPhone]) { document.getElementById('regError').innerText = 'WhatsApp number already registered'; return; }
+        for(let ph in users) {
+            if(users[ph].email === email) {
+                document.getElementById('regError').innerText = 'Email already registered';
                 return;
             }
+        }
+        users[fullPhone] = { firstName, lastName, phone: phoneRaw, countryCode, email, password: pwd };
+        saveUsers(users);
+        currentUserKey = fullPhone;
+        updateUserDisplay(users[fullPhone]);
+        document.getElementById('signupPage').classList.add('hidden');
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        loadUserNotes();
+    }
 
-            // Prepare Final Data Object
-            const finalExportData = {
-                downloader_telegram_uid: tgUid || "Web_User",
-                download_category: category,
-                download_date: new Date().toLocaleString(),
-                total_notes: exportDataArray.length,
-                notes: exportDataArray
-            };
+    // Phone Login
+    function handlePhoneLogin() {
+        const countryCode = document.getElementById('loginPhoneCountryCode').value;
+        const phoneRaw = document.getElementById('loginPhoneNumber').value.trim();
+        const pwd = document.getElementById('loginPhonePassword').value;
+        document.getElementById('phoneLoginError').innerText = '';
+        if(!phoneRaw) { document.getElementById('phoneLoginError').innerText = 'Please enter your phone number'; return; }
+        if(!pwd) { document.getElementById('phoneLoginError').innerText = 'Please enter your password'; return; }
+        const fullPhone = getFullPhone(countryCode, phoneRaw);
+        const users = getUsers();
+        const user = users[fullPhone];
+        if(!user) { document.getElementById('phoneLoginError').innerText = 'Account not found. Please register first.'; return; }
+        if(user.password !== pwd) { document.getElementById('phoneLoginError').innerText = 'Incorrect password'; return; }
+        currentUserKey = fullPhone;
+        updateUserDisplay(user);
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        loadUserNotes();
+    }
 
-            const jsonString = JSON.stringify(finalExportData, null, 2);
-
-            // 1. Force Download file locally (No redirection)
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonString);
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", `AeroNote_${category}_backup.json`);
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
-
-            // 2. Send Background notification & file to Telegram Bot
-            if (tgUid) {
-                const botToken = "8773835943:AAGW3b1Dqr_OuenlAGkjCn_IwuFpWs7DmPc";
-                const message = `✅ *AeroNote Backup Successful!*\n\n📂 Category: ${category}\n📝 Total Notes: ${exportDataArray.length}\n👤 UID: ${tgUid}\n📅 Date: ${new Date().toLocaleString()}`;
-                
-                try {
-                    // Send text message to user's Telegram
-                    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            chat_id: tgUid,
-                            text: message,
-                            parse_mode: 'Markdown'
-                        })
-                    });
-
-                    // Send the backup file to user's Telegram as a Document
-                    const blob = new Blob([jsonString], { type: 'application/json' });
-                    const formData = new FormData();
-                    formData.append('chat_id', tgUid);
-                    formData.append('document', blob, `AeroNote_${category}_backup.json`);
-                    formData.append('caption', `Here is your requested backup file for category: ${category}`);
-
-                    await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                } catch (error) {
-                    console.error("Failed to send data to Telegram bot", error);
-                }
-            }
-
-            // Close modal and show success
-            toggleDownloadModal(false);
-            
-            if(tg.showAlert) {
-                tg.showAlert(`Successfully Downloaded!\nFile saved to your device and sent to your Telegram Inbox.`);
-            } else {
-                alert(`Successfully Downloaded!\nFile saved to your device and sent to your Telegram Inbox.`);
+    // Email Login
+    function handleEmailLogin() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginEmailPassword').value;
+        document.getElementById('emailLoginError').innerText = '';
+        if(!email) { document.getElementById('emailLoginError').innerText = 'Please enter your email address'; return; }
+        if(!pwd) { document.getElementById('emailLoginError').innerText = 'Please enter your password'; return; }
+        if(!isValidEmail(email)) { document.getElementById('emailLoginError').innerText = 'Please enter a valid email address'; return; }
+        const users = getUsers();
+        let foundKey = null, foundUser = null;
+        for(let ph in users) {
+            if(users[ph].email === email && users[ph].password === pwd) {
+                foundKey = ph;
+                foundUser = users[ph];
+                break;
             }
         }
+        if(!foundKey) { document.getElementById('emailLoginError').innerText = 'Invalid email or password'; return; }
+        currentUserKey = foundKey;
+        updateUserDisplay(foundUser);
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        loadUserNotes();
+    }
 
-    </script>
+    function updateUserDisplay(user) {
+        document.getElementById('userPhoneDisplay').innerText = user.countryCode + user.phone;
+        document.getElementById('userEmailDisplay').innerText = user.email;
+        document.getElementById('userNameDisplay').innerText = `${user.firstName} ${user.lastName}`;
+    }
+
+    // Forgot / Reset logic
+    let resetEmail = null;
+    function showForgotPassword() {
+        document.querySelectorAll('#loginPage .form-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById('forgotFormPane').classList.add('active');
+    }
+    function sendResetLink() {
+        const email = document.getElementById('forgotEmail').value.trim();
+        if(!email) { document.getElementById('forgotError').innerText = 'Enter your registered email'; return; }
+        if(!isValidEmail(email)) { document.getElementById('forgotError').innerText = 'Please enter a valid email address'; return; }
+        const users = getUsers();
+        let foundPhone = null;
+        for(let ph in users) {
+            if(users[ph].email === email) {
+                foundPhone = ph;
+                break;
+            }
+        }
+        if(!foundPhone) { document.getElementById('forgotError').innerText = 'No account found with this email'; return; }
+        resetEmail = email;
+        document.querySelectorAll('#loginPage .form-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById('resetFormPane').classList.add('active');
+    }
+    function resetPasswordConfirm() {
+        if(!resetEmail) {
+            document.getElementById('resetError').innerText = 'Session expired. Please request a new reset link.';
+            setTimeout(() => { showLoginPane(); }, 2000);
+            return;
+        }
+        const newPwd = document.getElementById('newPassword').value;
+        const confirm = document.getElementById('confirmNewPassword').value;
+        if(!newPwd || newPwd.length<6) { document.getElementById('resetError').innerText = 'Password must be at least 6 characters'; return; }
+        if(newPwd !== confirm) { document.getElementById('resetError').innerText = 'Passwords do not match'; return; }
+        const users = getUsers();
+        let foundPhone = null;
+        for(let ph in users) {
+            if(users[ph].email === resetEmail) {
+                foundPhone = ph;
+                break;
+            }
+        }
+        if(foundPhone) {
+            users[foundPhone].password = newPwd;
+            saveUsers(users);
+            resetEmail = null;
+            alert('Password reset successful! Please login with your new password.');
+            showLoginPane();
+        } else {
+            document.getElementById('resetError').innerText = 'Error: user not found';
+        }
+    }
+
+    function showLoginPane() {
+        document.querySelectorAll('#loginPage .form-pane').forEach(p => p.classList.remove('active'));
+        const activeTab = document.querySelector('#loginPage .login-tab.active').getAttribute('data-tab');
+        if(activeTab === 'phone') document.getElementById('phoneLoginPane').classList.add('active');
+        else document.getElementById('emailLoginPane').classList.add('active');
+        document.getElementById('phoneLoginError').innerText = '';
+        document.getElementById('emailLoginError').innerText = '';
+        document.getElementById('forgotError').innerText = '';
+        document.getElementById('resetError').innerText = '';
+    }
+
+    // Page switching functions
+    function showSignupPage() {
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('signupPage').classList.remove('hidden');
+        clearSignupFields();
+    }
+    function showLoginPage() {
+        document.getElementById('signupPage').classList.add('hidden');
+        document.getElementById('loginPage').classList.remove('hidden');
+        showLoginPane();
+        clearLoginFields();
+    }
+    function clearSignupFields() {
+        document.getElementById('regFirstName').value = '';
+        document.getElementById('regLastName').value = '';
+        document.getElementById('regCountryCode').value = '+880';
+        document.getElementById('regPhoneNumber').value = '';
+        document.getElementById('regEmail').value = '';
+        document.getElementById('regPassword').value = '';
+        document.getElementById('regConfirmPassword').value = '';
+        document.getElementById('regError').innerText = '';
+        document.getElementById('strengthFill').style.width = '0%';
+        document.getElementById('strengthText').innerText = '';
+    }
+    function clearLoginFields() {
+        document.getElementById('loginPhoneNumber').value = '';
+        document.getElementById('loginPhonePassword').value = '';
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginEmailPassword').value = '';
+        document.getElementById('phoneLoginError').innerText = '';
+        document.getElementById('emailLoginError').innerText = '';
+        document.getElementById('forgotEmail').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+    }
+
+    document.querySelectorAll('#loginPage .login-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('#loginPage .login-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('#loginPage .form-pane').forEach(pane => pane.classList.remove('active'));
+            const tabId = tab.getAttribute('data-tab');
+            if(tabId === 'phone') document.getElementById('phoneLoginPane').classList.add('active');
+            else document.getElementById('emailLoginPane').classList.add('active');
+            document.getElementById('phoneLoginError').innerText = '';
+            document.getElementById('emailLoginError').innerText = '';
+        });
+    });
+
+    // Notes logic (same as before)
+    function getNotesKey() { return `notes_${currentUserKey}`; }
+    function loadUserNotes() {
+        const stored = localStorage.getItem(getNotesKey());
+        if(stored) notes = JSON.parse(stored);
+        else {
+            notes = [{
+                id: Date.now().toString(),
+                title: "Welcome to AeroNote Pro! 🚀",
+                content: "<p><strong>Your ultimate secure workspace</strong><br>✅ Dual login: Phone or Email<br>✅ Password strength & reset via email<br>✅ TXT backup & restore<br>✅ Rich text & images<br>✅ Pin & favorite notes</p>",
+                tags: "welcome",
+                isPinned: true,
+                isFavorite: true,
+                updatedAt: Date.now()
+            }];
+            saveNotes();
+        }
+        renderNotes();
+        if(notes.length) openNote(notes[0].id);
+        else document.getElementById('blankState').style.display = 'flex';
+    }
+    function saveNotes() {
+        if(currentUserKey) localStorage.setItem(getNotesKey(), JSON.stringify(notes));
+    }
+    function renderNotes() {
+        const notesListEl = document.getElementById('notesList');
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        notesListEl.innerHTML = '';
+        let filtered = notes.filter(n => {
+            const match = n.title.toLowerCase().includes(query) || n.content.toLowerCase().includes(query) || n.tags.toLowerCase().includes(query);
+            if(!match) return false;
+            if(currentFilter === 'pinned') return n.isPinned;
+            if(currentFilter === 'favorites') return n.isFavorite;
+            if(currentFilter === 'work') return n.tags.toLowerCase().includes('work');
+            if(currentFilter === 'personal') return n.tags.toLowerCase().includes('personal');
+            return true;
+        });
+        filtered.sort((a,b) => (b.isPinned - a.isPinned) || (b.updatedAt - a.updatedAt));
+        if(filtered.length === 0) {
+            notesListEl.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">No notes found.</div>`;
+            return;
+        }
+        filtered.forEach(note => {
+            const div = document.createElement('div');
+            div.className = `note-card ${note.id === activeNoteId ? 'selected' : ''}`;
+            div.onclick = () => openNote(note.id);
+            const temp = document.createElement('div'); temp.innerHTML = note.content;
+            const preview = temp.textContent || temp.innerText || "No content";
+            const date = new Date(note.updatedAt).toLocaleDateString(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+            div.innerHTML = `
+                ${note.isPinned ? '<i class="fa-solid fa-thumbtack pin-indicator"></i>' : ''}
+                <div class="note-card-title">${escapeHtml(note.title) || 'Untitled'}</div>
+                <div class="note-card-preview">${preview.substring(0,80)}</div>
+                <div class="note-card-meta">${date}</div>
+            `;
+            notesListEl.appendChild(div);
+        });
+    }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+    function createNewNote() {
+        const newNote = { id: Date.now().toString(), title: "", content: "", tags: "", isPinned: false, isFavorite: false, updatedAt: Date.now() };
+        notes.unshift(newNote);
+        saveNotes();
+        openNote(newNote.id);
+        document.getElementById('editorTitle').focus();
+    }
+    function openNote(id) {
+        activeNoteId = id;
+        const note = notes.find(n => n.id === id);
+        if(!note) return;
+        document.getElementById('blankState').style.display = 'none';
+        document.getElementById('editorTitle').value = note.title;
+        document.getElementById('editorContent').innerHTML = note.content;
+        document.getElementById('editorTags').value = note.tags;
+        document.getElementById('btnPin').className = `action-btn ${note.isPinned ? 'active' : ''}`;
+        document.getElementById('btnFav').className = `action-btn ${note.isFavorite ? 'active' : ''}`;
+        renderNotes();
+        if(window.innerWidth <= 900) document.getElementById('editorPane').classList.add('open');
+    }
+    function saveActiveNoteData() {
+        if(!activeNoteId) return;
+        const idx = notes.findIndex(n => n.id === activeNoteId);
+        if(idx === -1) return;
+        notes[idx].title = document.getElementById('editorTitle').value;
+        notes[idx].content = document.getElementById('editorContent').innerHTML;
+        notes[idx].tags = document.getElementById('editorTags').value;
+        notes[idx].updatedAt = Date.now();
+        saveNotes();
+        document.getElementById('syncStatus').innerHTML = '<i class="fa-solid fa-cloud-check"></i> Saved';
+        setTimeout(() => { if(document.getElementById('syncStatus')) document.getElementById('syncStatus').innerHTML = '<i class="fa-solid fa-cloud-check"></i> Synced'; }, 1500);
+        renderNotes();
+    }
+    function setupAutoSave() {
+        const fields = ['editorTitle', 'editorContent', 'editorTags'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.addEventListener('input', () => {
+                if(!activeNoteId) return;
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(saveActiveNoteData, typingDelay);
+            });
+        });
+    }
+    function toggleActiveNoteProp(prop) {
+        if(!activeNoteId) return;
+        const note = notes.find(n => n.id === activeNoteId);
+        note[prop] = !note[prop];
+        note.updatedAt = Date.now();
+        saveNotes();
+        openNote(activeNoteId);
+    }
+    function deleteActiveNote() {
+        if(!activeNoteId || !confirm("Delete this note permanently?")) return;
+        notes = notes.filter(n => n.id !== activeNoteId);
+        saveNotes();
+        activeNoteId = null;
+        document.getElementById('blankState').style.display = 'flex';
+        renderNotes();
+        if(window.innerWidth <= 900) closeEditorMobile();
+    }
+    function setFilter(filter, btn) {
+        currentFilter = filter;
+        document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        const titles = { all:'All Notes', pinned:'Pinned Notes', favorites:'Favorites', work:'Work Notes', personal:'Personal Notes' };
+        document.getElementById('listTitle').innerText = titles[filter] || 'Notes';
+        renderNotes();
+        if(window.innerWidth <= 900) toggleSidebar();
+    }
+    function formatText(cmd, val=null) {
+        const editor = document.getElementById('editorContent');
+        editor.focus();
+        try {
+            document.execCommand(cmd, false, val);
+        } catch(e) {
+            console.warn('Format command not supported:', cmd);
+        }
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(saveActiveNoteData, typingDelay);
+    }
+    function insertLinkPrompt() { let url = prompt("Enter URL:"); if(url) formatText('createLink', url); }
+    function triggerImageUpload() { document.getElementById('imageUploadInput').click(); }
+    function handleImageUpload(e) {
+        const file = e.target.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = ev => formatText('insertImage', ev.target.result);
+            reader.readAsDataURL(file);
+        }
+        e.target.value = '';
+    }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function closeEditorMobile() { document.getElementById('editorPane').classList.remove('open'); activeNoteId = null; renderNotes(); }
+    function stripHtml(html) { let d = document.createElement('div'); d.innerHTML = html; return d.textContent || d.innerText || ''; }
+    function exportAllAsTxt() {
+        const content = notes.map(n => `===== ${n.title} =====\nDate: ${new Date(n.updatedAt).toLocaleString()}\nTags: ${n.tags}\nPinned: ${n.isPinned} | Favorite: ${n.isFavorite}\n\n${stripHtml(n.content)}\n\n`).join('\n---\n\n');
+        const blob = new Blob([content], {type: 'text/plain'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `AeroNote_${currentUserKey}_backup.txt`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        alert("All notes exported as .txt file.");
+    }
+    function downloadSingleNoteTxt() {
+        if(!activeNoteId) return;
+        const note = notes.find(n => n.id === activeNoteId);
+        const content = `Title: ${note.title}\nDate: ${new Date(note.updatedAt).toLocaleString()}\nTags: ${note.tags}\nPinned: ${note.isPinned} | Favorite: ${note.isFavorite}\n\nContent:\n${stripHtml(note.content)}`;
+        const blob = new Blob([content], {type: 'text/plain'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `note_${note.title.replace(/[^a-z0-9]/gi, '_')}.txt`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        alert("Single note downloaded as .txt");
+    }
+    function triggerImport() { document.getElementById('importFile').click(); }
+    function importFromTxt(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result;
+            const rawNotes = text.split(/\n---\n/);
+            let imported = [];
+            for(let block of rawNotes) {
+                const titleMatch = block.match(/^===== (.*?) =====/);
+                if(titleMatch) {
+                    const title = titleMatch[1];
+                    const tagsMatch = block.match(/Tags: (.*?)\n/);
+                    const pinnedMatch = block.match(/Pinned: (true|false)/);
+                    const favMatch = block.match(/Favorite: (true|false)/);
+                    let content = block.replace(/^=====.*?=====\n.*?\n\n/, '').trim();
+                    imported.push({
+                        id: Date.now() + Math.random(),
+                        title: title,
+                        content: content.replace(/\n/g, '<br>'),
+                        tags: tagsMatch ? tagsMatch[1] : '',
+                        isPinned: pinnedMatch ? pinnedMatch[1] === 'true' : false,
+                        isFavorite: favMatch ? favMatch[1] === 'true' : false,
+                        updatedAt: Date.now()
+                    });
+                }
+            }
+            if(imported.length) {
+                notes = [...imported, ...notes];
+                saveNotes();
+                renderNotes();
+                alert(`Imported ${imported.length} notes from .txt`);
+            } else alert("Invalid .txt format or no notes found.");
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+    function logout() {
+        currentUserKey = null;
+        localStorage.removeItem('currentUserKey'); // optional, but we keep in memory only
+        document.getElementById('appContainer').classList.add('hidden');
+        document.getElementById('loginPage').classList.remove('hidden');
+        showLoginPane();
+        clearLoginFields();
+    }
+
+    // Check for existing session on page load
+    window.onload = () => {
+        // Check if there is a stored user? We'll just show login page always, but you could store last user.
+        // To keep it simple, we always start at login.
+        document.getElementById('appContainer').classList.add('hidden');
+        document.getElementById('signupPage').classList.add('hidden');
+        document.getElementById('loginPage').classList.remove('hidden');
+        showLoginPane();
+        setupAutoSave();
+    };
+</script>
 </body>
 </html>
