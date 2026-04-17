@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AeroNote - Secure Notepad</title>
+    <title>AeroNote - Simple Notepad</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             margin: 0;
@@ -42,134 +41,6 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
 
-        /* Auth Pages (Login & Signup) */
-        .auth-page {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .auth-card {
-            background: white;
-            border-radius: 40px;
-            padding: 32px;
-            width: 100%;
-            max-width: 520px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
-        }
-        .login-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 28px;
-            border-bottom: 2px solid var(--border);
-        }
-        .login-tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            color: var(--text-muted);
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-            transition: 0.2s;
-        }
-        .login-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-        .form-pane {
-            display: none;
-        }
-        .form-pane.active {
-            display: block;
-        }
-        .input-group {
-            margin-bottom: 22px;
-            position: relative;
-        }
-        .input-group label {
-            font-size: 13px;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 6px;
-        }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px 16px;
-            padding-right: 45px;
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            font-size: 15px;
-            background: white;
-        }
-        .input-group input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0,82,255,0.1);
-        }
-        .password-toggle {
-            position: absolute;
-            right: 16px;
-            bottom: 14px;
-            cursor: pointer;
-            color: var(--text-muted);
-            background: white;
-            padding: 0 5px;
-            font-size: 16px;
-        }
-        .phone-row { display: flex; gap: 10px; }
-        .phone-row select { width: 120px; padding-right: 10px; }
-        .phone-row input { flex: 1; }
-        .login-btn {
-            background: var(--primary);
-            color: white;
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 700;
-            font-size: 16px;
-            margin-top: 8px;
-            transition: 0.2s;
-        }
-        .login-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .toggle-link {
-            text-align: center;
-            margin-top: 18px;
-            font-size: 14px;
-            color: var(--primary);
-            cursor: pointer;
-        }
-        .error-msg {
-            color: var(--danger);
-            font-size: 12px;
-            margin-top: 6px;
-        }
-        .strength-bar {
-            height: 4px;
-            background: #E2E8F0;
-            border-radius: 4px;
-            margin-top: 8px;
-        }
-        .strength-fill {
-            height: 4px;
-            border-radius: 4px;
-            width: 0%;
-            transition: 0.2s;
-        }
-        .strength-text {
-            font-size: 11px;
-            margin-top: 4px;
-        }
-        .hidden { display: none !important; }
-
-        /* Main App (unchanged) */
         .app-container {
             display: flex;
             width: 100%;
@@ -227,13 +98,6 @@
         }
         .nav-item i { width: 18px; text-align: center; font-size: 16px; }
         .sidebar-spacer { flex-grow: 1; }
-        .user-info {
-            margin-top: auto;
-            padding: 16px 12px;
-            border-top: 1px solid var(--border);
-            font-size: 12px;
-            color: var(--text-muted);
-        }
         .backup-btns {
             display: flex;
             gap: 8px;
@@ -248,21 +112,6 @@
             font-weight: 600;
             text-align: center;
             cursor: pointer;
-        }
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            margin-top: 8px;
-            font-size: 12px;
-        }
-        .telegram-btn {
-            margin-top: 10px;
-            background: #F8FAFC;
-            border: 1px dashed #0088cc;
-            color: #0088cc;
-            justify-content: center;
         }
         .list-pane {
             width: 320px;
@@ -295,6 +144,10 @@
             align-items: center;
             justify-content: center;
         }
+        .create-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
         .search-box {
             background: var(--bg-panel);
             border: 1px solid var(--border);
@@ -326,6 +179,10 @@
             border: 1px solid transparent;
             box-shadow: var(--shadow-sm);
             position: relative;
+        }
+        .note-card:hover {
+            border-color: var(--border);
+            box-shadow: var(--shadow-md);
         }
         .note-card.selected {
             background: var(--primary-light);
@@ -377,6 +234,22 @@
             z-index: 5;
             text-align: center;
         }
+        .blank-state i {
+            font-size: 60px;
+            color: #CBD5E1;
+            margin-bottom: 20px;
+        }
+        .blank-state h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .blank-state-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+        }
         .editor-header {
             padding: 15px 30px;
             border-bottom: 1px solid var(--border);
@@ -397,6 +270,10 @@
             justify-content: center;
             color: var(--text-muted);
             border: 1px solid transparent;
+        }
+        .action-btn:hover {
+            background: var(--bg-page);
+            border-color: var(--border);
         }
         .action-btn.active {
             color: var(--primary);
@@ -453,6 +330,12 @@
             color: #334155;
             outline: none;
         }
+        .editor-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+        }
         .editor-tags-input {
             width: 100%;
             border: none;
@@ -464,6 +347,7 @@
             border-top: 1px dashed var(--border);
         }
         .mobile-back, .mobile-menu-btn { display: none; }
+
         @media (max-width: 900px) {
             .sidebar {
                 position: fixed;
@@ -493,185 +377,10 @@
     </style>
 </head>
 <body>
-
-<!-- LOGIN PAGE -->
-<div id="loginPage" class="auth-page">
-    <div class="auth-card">
-        <div class="login-tabs">
-            <div class="login-tab active" data-tab="phone">📱 Phone Login</div>
-            <div class="login-tab" data-tab="email">✉️ Email Login</div>
-        </div>
-        <!-- Phone Login Pane -->
-        <div id="phoneLoginPane" class="form-pane active">
-            <i class="fa-solid fa-mobile-alt" style="font-size:48px; color:var(--primary); display:block; text-align:center; margin-bottom:16px;"></i>
-            <h2 style="text-align:center;">Phone Login</h2>
-            <div class="input-group">
-                <label>WhatsApp Number</label>
-                <div class="phone-row">
-                    <select id="loginPhoneCountryCode">
-                        <option value="+880">🇧🇩 +880 (Bangladesh)</option>
-                        <option value="+91">🇮🇳 +91 (India)</option>
-                        <option value="+92">🇵🇰 +92 (Pakistan)</option>
-                        <option value="+977">🇳🇵 +977 (Nepal)</option>
-                        <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
-                        <option value="+86">🇨🇳 +86 (China)</option>
-                        <option value="+81">🇯🇵 +81 (Japan)</option>
-                        <option value="+82">🇰🇷 +82 (South Korea)</option>
-                        <option value="+966">🇸🇦 +966 (Saudi Arabia)</option>
-                        <option value="+971">🇦🇪 +971 (UAE)</option>
-                        <option value="+44">🇬🇧 +44 (UK)</option>
-                        <option value="+33">🇫🇷 +33 (France)</option>
-                        <option value="+49">🇩🇪 +49 (Germany)</option>
-                        <option value="+39">🇮🇹 +39 (Italy)</option>
-                        <option value="+34">🇪🇸 +34 (Spain)</option>
-                        <option value="+7">🇷🇺 +7 (Russia)</option>
-                        <option value="+1">🇺🇸 +1 (USA/Canada)</option>
-                        <option value="+52">🇲🇽 +52 (Mexico)</option>
-                        <option value="+55">🇧🇷 +55 (Brazil)</option>
-                        <option value="+54">🇦🇷 +54 (Argentina)</option>
-                        <option value="+51">🇵🇪 +51 (Peru)</option>
-                        <option value="+56">🇨🇱 +56 (Chile)</option>
-                        <option value="+20">🇪🇬 +20 (Egypt)</option>
-                        <option value="+234">🇳🇬 +234 (Nigeria)</option>
-                        <option value="+27">🇿🇦 +27 (South Africa)</option>
-                        <option value="+254">🇰🇪 +254 (Kenya)</option>
-                        <option value="+61">🇦🇺 +61 (Australia)</option>
-                        <option value="+64">🇳🇿 +64 (New Zealand)</option>
-                        <option value="+679">🇫🇯 +679 (Fiji)</option>
-                    </select>
-                    <input type="tel" id="loginPhoneNumber" placeholder="1234567890">
-                </div>
-            </div>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="loginPhonePassword" placeholder="••••••">
-                <span class="password-toggle" onclick="togglePassword('loginPhonePassword')"><i class="fa-regular fa-eye-slash"></i></span>
-            </div>
-            <button class="login-btn" onclick="handlePhoneLogin()">Login with Phone</button>
-            <div class="toggle-link" onclick="showSignupPage()">Create new account</div>
-            <div class="toggle-link" onclick="showForgotPassword()">Forgot Password?</div>
-            <div id="phoneLoginError" class="error-msg"></div>
-        </div>
-        <!-- Email Login Pane -->
-        <div id="emailLoginPane" class="form-pane">
-            <i class="fa-regular fa-envelope" style="font-size:48px; color:var(--primary); display:block; text-align:center; margin-bottom:16px;"></i>
-            <h2 style="text-align:center;">Email Login</h2>
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="loginEmail" placeholder="you@example.com">
-            </div>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="loginEmailPassword" placeholder="••••••">
-                <span class="password-toggle" onclick="togglePassword('loginEmailPassword')"><i class="fa-regular fa-eye-slash"></i></span>
-            </div>
-            <button class="login-btn" onclick="handleEmailLogin()">Login with Email</button>
-            <div class="toggle-link" onclick="showSignupPage()">Create new account</div>
-            <div class="toggle-link" onclick="showForgotPassword()">Forgot Password?</div>
-            <div id="emailLoginError" class="error-msg"></div>
-        </div>
-        <!-- Forgot Password Pane -->
-        <div id="forgotFormPane" class="form-pane">
-            <i class="fa-solid fa-key" style="font-size:48px; color:var(--primary); text-align:center; display:block;"></i>
-            <h2 style="text-align:center;">Reset Password</h2>
-            <p>Enter your registered email address</p>
-            <div class="input-group">
-                <label>Email</label>
-                <input type="email" id="forgotEmail" placeholder="you@example.com">
-            </div>
-            <button class="login-btn" onclick="sendResetLink()">Send Reset Link</button>
-            <div class="toggle-link" onclick="showLoginPane()">Back to Login</div>
-            <div id="forgotError" class="error-msg"></div>
-        </div>
-        <!-- Reset Password Pane -->
-        <div id="resetFormPane" class="form-pane">
-            <h2 style="text-align:center;">Set New Password</h2>
-            <div class="input-group">
-                <label>New Password</label>
-                <input type="password" id="newPassword" onkeyup="checkResetStrength()">
-                <span class="password-toggle" onclick="togglePassword('newPassword')"><i class="fa-regular fa-eye-slash"></i></span>
-                <div class="strength-bar"><div class="strength-fill" id="resetStrengthFill"></div></div>
-                <div class="strength-text" id="resetStrengthText"></div>
-            </div>
-            <div class="input-group">
-                <label>Confirm Password</label>
-                <input type="password" id="confirmNewPassword">
-                <span class="password-toggle" onclick="togglePassword('confirmNewPassword')"><i class="fa-regular fa-eye-slash"></i></span>
-            </div>
-            <button class="login-btn" onclick="resetPasswordConfirm()">Reset Password</button>
-            <div class="toggle-link" onclick="showLoginPane()">Cancel</div>
-            <div id="resetError" class="error-msg"></div>
-        </div>
-    </div>
-</div>
-
-<!-- SIGNUP PAGE (separate) -->
-<div id="signupPage" class="auth-page hidden">
-    <div class="auth-card">
-        <i class="fa-solid fa-user-plus" style="font-size:48px; color:var(--primary); text-align:center; display:block; margin-bottom:16px;"></i>
-        <h2 style="text-align:center;">Create Account</h2>
-        <div class="input-group"><label>First Name</label><input type="text" id="regFirstName"></div>
-        <div class="input-group"><label>Last Name</label><input type="text" id="regLastName"></div>
-        <div class="input-group">
-            <label>WhatsApp Number</label>
-            <div class="phone-row">
-                <select id="regCountryCode">
-                    <option value="+880">🇧🇩 +880 (Bangladesh)</option>
-                    <option value="+91">🇮🇳 +91 (India)</option>
-                    <option value="+92">🇵🇰 +92 (Pakistan)</option>
-                    <option value="+977">🇳🇵 +977 (Nepal)</option>
-                    <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
-                    <option value="+86">🇨🇳 +86 (China)</option>
-                    <option value="+81">🇯🇵 +81 (Japan)</option>
-                    <option value="+82">🇰🇷 +82 (South Korea)</option>
-                    <option value="+966">🇸🇦 +966 (Saudi Arabia)</option>
-                    <option value="+971">🇦🇪 +971 (UAE)</option>
-                    <option value="+44">🇬🇧 +44 (UK)</option>
-                    <option value="+33">🇫🇷 +33 (France)</option>
-                    <option value="+49">🇩🇪 +49 (Germany)</option>
-                    <option value="+39">🇮🇹 +39 (Italy)</option>
-                    <option value="+34">🇪🇸 +34 (Spain)</option>
-                    <option value="+7">🇷🇺 +7 (Russia)</option>
-                    <option value="+1">🇺🇸 +1 (USA/Canada)</option>
-                    <option value="+52">🇲🇽 +52 (Mexico)</option>
-                    <option value="+55">🇧🇷 +55 (Brazil)</option>
-                    <option value="+54">🇦🇷 +54 (Argentina)</option>
-                    <option value="+51">🇵🇪 +51 (Peru)</option>
-                    <option value="+56">🇨🇱 +56 (Chile)</option>
-                    <option value="+20">🇪🇬 +20 (Egypt)</option>
-                    <option value="+234">🇳🇬 +234 (Nigeria)</option>
-                    <option value="+27">🇿🇦 +27 (South Africa)</option>
-                    <option value="+254">🇰🇪 +254 (Kenya)</option>
-                    <option value="+61">🇦🇺 +61 (Australia)</option>
-                    <option value="+64">🇳🇿 +64 (New Zealand)</option>
-                    <option value="+679">🇫🇯 +679 (Fiji)</option>
-                </select>
-                <input type="tel" id="regPhoneNumber" placeholder="1234567890">
-            </div>
-        </div>
-        <div class="input-group"><label>Email (required for password reset)</label><input type="email" id="regEmail"></div>
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="regPassword" onkeyup="checkPasswordStrength()">
-            <span class="password-toggle" onclick="togglePassword('regPassword')"><i class="fa-regular fa-eye-slash"></i></span>
-            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
-            <div class="strength-text" id="strengthText"></div>
-        </div>
-        <div class="input-group">
-            <label>Confirm Password</label>
-            <input type="password" id="regConfirmPassword">
-            <span class="password-toggle" onclick="togglePassword('regConfirmPassword')"><i class="fa-regular fa-eye-slash"></i></span>
-        </div>
-        <button class="login-btn" onclick="handleRegister()">Register</button>
-        <div class="toggle-link" onclick="showLoginPage()">Back to Login</div>
-        <div id="regError" class="error-msg"></div>
-    </div>
-</div>
-
-<!-- MAIN APP -->
-<div class="app-container hidden" id="appContainer">
+<div class="app-container">
+    <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
-        <div class="logo"><i class="fa-solid fa-feather"></i> AeroNote Pro</div>
+        <div class="logo"><i class="fa-solid fa-feather"></i> AeroNote</div>
         <div class="nav-label">Menu</div>
         <button class="nav-item active" data-filter="all" onclick="setFilter('all', this)"><i class="fa-solid fa-layer-group"></i> All Notes</button>
         <button class="nav-item" data-filter="pinned" onclick="setFilter('pinned', this)"><i class="fa-solid fa-thumbtack"></i> Pinned</button>
@@ -679,20 +388,17 @@
         <div class="nav-label">Organization</div>
         <button class="nav-item" data-filter="work" onclick="setFilter('work', this)"><i class="fa-solid fa-briefcase"></i> Work</button>
         <button class="nav-item" data-filter="personal" onclick="setFilter('personal', this)"><i class="fa-solid fa-user"></i> Personal</button>
-        <div class="user-info">
-            <i class="fa-brands fa-whatsapp"></i> <span id="userPhoneDisplay"></span><br>
-            <i class="fa-regular fa-envelope"></i> <span id="userEmailDisplay"></span><br>
-            <span id="userNameDisplay"></span>
-            <div class="backup-btns">
-                <div class="backup-btn" onclick="exportAllAsTxt()"><i class="fa-solid fa-file-lines"></i> TXT Backup</div>
-                <div class="backup-btn" onclick="triggerImport()"><i class="fa-solid fa-upload"></i> Restore TXT</div>
-            </div>
-            <input type="file" id="importFile" accept=".txt" style="display:none;" onchange="importFromTxt(event)">
-            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
-        </div>
+
         <div class="sidebar-spacer"></div>
-        <a href="https://t.me/TechCommunitys" target="_blank" class="nav-item telegram-btn"><i class="fa-brands fa-telegram"></i> Telegram Channel</a>
+        <div class="backup-btns">
+            <div class="backup-btn" onclick="exportAllAsTxt()"><i class="fa-solid fa-file-lines"></i> TXT Backup</div>
+            <div class="backup-btn" onclick="triggerImport()"><i class="fa-solid fa-upload"></i> Restore TXT</div>
+        </div>
+        <input type="file" id="importFile" accept=".txt" style="display:none;" onchange="importFromTxt(event)">
+        <a href="https://t.me/TechCommunitys" target="_blank" class="nav-item telegram-btn" style="margin-top: 12px; background:#F8FAFC; border:1px dashed #0088cc; color:#0088cc; justify-content:center;"><i class="fa-brands fa-telegram"></i> Telegram Channel</a>
     </nav>
+
+    <!-- List Pane -->
     <div class="list-pane">
         <div class="list-header">
             <div class="list-title-row">
@@ -709,6 +415,8 @@
         </div>
         <div class="notes-list" id="notesList"></div>
     </div>
+
+    <!-- Editor Pane -->
     <div class="editor-pane" id="editorPane">
         <div class="blank-state" id="blankState">
             <i class="fa-regular fa-file-lines"></i>
@@ -742,296 +450,31 @@
         </div>
         <div class="editor-body">
             <input type="text" id="editorTitle" class="editor-title-input" placeholder="Note Title">
-            <div id="editorContent" class="editor-content" contenteditable="true"></div>
+            <div id="editorContent" class="editor-content" contenteditable="true" placeholder="Start typing here..."></div>
             <input type="text" id="editorTags" class="editor-tags-input" placeholder="# Add tags separated by comma (e.g. work, ideas)">
         </div>
     </div>
 </div>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    if(tg) tg.expand();
-
-    let currentUserKey = null;
+    // No login – everything is stored locally under a fixed key
     let notes = [];
     let activeNoteId = null;
     let currentFilter = 'all';
     let typingTimer;
     const typingDelay = 800;
 
-    // Helper: get full phone from country code + number
-    function getFullPhone(code, num) { return code + num.replace(/\D/g, ''); }
+    const STORAGE_KEY = 'aeronote_notes';
 
-    function getUsers() { return JSON.parse(localStorage.getItem('aeronote_users_v9') || '{}'); }
-    function saveUsers(users) { localStorage.setItem('aeronote_users_v9', JSON.stringify(users)); }
-
-    // Password strength
-    function checkPasswordStrength() {
-        const pwd = document.getElementById('regPassword').value;
-        const fill = document.getElementById('strengthFill');
-        const text = document.getElementById('strengthText');
-        let strength = 0;
-        if(pwd.length >= 6) strength++;
-        if(/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
-        if(/[0-9]/.test(pwd)) strength++;
-        if(/[^a-zA-Z0-9]/.test(pwd)) strength++;
-        const percent = (strength/4)*100;
-        fill.style.width = percent+'%';
-        fill.style.backgroundColor = percent<=25?'#EF4444': percent<=50?'#F59E0B': percent<=75?'#3B82F6':'#10B981';
-        text.innerText = percent<=25?'Weak': percent<=50?'Fair': percent<=75?'Good':'Strong';
-    }
-    function checkResetStrength() {
-        const pwd = document.getElementById('newPassword').value;
-        const fill = document.getElementById('resetStrengthFill');
-        const text = document.getElementById('resetStrengthText');
-        if(!fill) return;
-        let strength = 0;
-        if(pwd.length>=6) strength++;
-        if(/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
-        if(/[0-9]/.test(pwd)) strength++;
-        if(/[^a-zA-Z0-9]/.test(pwd)) strength++;
-        const percent = (strength/4)*100;
-        fill.style.width = percent+'%';
-        fill.style.backgroundColor = percent<=25?'#EF4444': percent<=50?'#F59E0B': percent<=75?'#3B82F6':'#10B981';
-        if(text) text.innerText = percent<=25?'Weak': percent<=50?'Fair': percent<=75?'Good':'Strong';
-    }
-
-    function togglePassword(fieldId) {
-        const field = document.getElementById(fieldId);
-        const container = field.parentElement;
-        const icon = container.querySelector('.password-toggle i');
-        if(field.type === 'password') {
-            field.type = 'text';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
+    function loadNotes() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if(stored) {
+            notes = JSON.parse(stored);
         } else {
-            field.type = 'password';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        }
-    }
-
-    function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    // Registration (separate code + number)
-    function handleRegister() {
-        const firstName = document.getElementById('regFirstName').value.trim();
-        const lastName = document.getElementById('regLastName').value.trim();
-        const countryCode = document.getElementById('regCountryCode').value;
-        const phoneRaw = document.getElementById('regPhoneNumber').value.trim();
-        const email = document.getElementById('regEmail').value.trim();
-        const pwd = document.getElementById('regPassword').value;
-        const confirm = document.getElementById('regConfirmPassword').value;
-        
-        if(!firstName || !lastName || !countryCode || !phoneRaw || !pwd || !email) {
-            document.getElementById('regError').innerText = 'All fields are required';
-            return;
-        }
-        if(!isValidEmail(email)) {
-            document.getElementById('regError').innerText = 'Please enter a valid email address';
-            return;
-        }
-        const fullPhone = getFullPhone(countryCode, phoneRaw);
-        if(fullPhone.length < 8) {
-            document.getElementById('regError').innerText = 'Phone number must be at least 8 digits';
-            return;
-        }
-        if(pwd !== confirm) { document.getElementById('regError').innerText = 'Passwords do not match'; return; }
-        if(pwd.length < 6) { document.getElementById('regError').innerText = 'Password must be at least 6 characters'; return; }
-        
-        const users = getUsers();
-        if(users[fullPhone]) { document.getElementById('regError').innerText = 'WhatsApp number already registered'; return; }
-        for(let ph in users) {
-            if(users[ph].email === email) {
-                document.getElementById('regError').innerText = 'Email already registered';
-                return;
-            }
-        }
-        users[fullPhone] = { firstName, lastName, phone: phoneRaw, countryCode, email, password: pwd };
-        saveUsers(users);
-        currentUserKey = fullPhone;
-        updateUserDisplay(users[fullPhone]);
-        document.getElementById('signupPage').classList.add('hidden');
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('appContainer').classList.remove('hidden');
-        loadUserNotes();
-    }
-
-    // Phone Login
-    function handlePhoneLogin() {
-        const countryCode = document.getElementById('loginPhoneCountryCode').value;
-        const phoneRaw = document.getElementById('loginPhoneNumber').value.trim();
-        const pwd = document.getElementById('loginPhonePassword').value;
-        document.getElementById('phoneLoginError').innerText = '';
-        if(!phoneRaw) { document.getElementById('phoneLoginError').innerText = 'Please enter your phone number'; return; }
-        if(!pwd) { document.getElementById('phoneLoginError').innerText = 'Please enter your password'; return; }
-        const fullPhone = getFullPhone(countryCode, phoneRaw);
-        const users = getUsers();
-        const user = users[fullPhone];
-        if(!user) { document.getElementById('phoneLoginError').innerText = 'Account not found. Please register first.'; return; }
-        if(user.password !== pwd) { document.getElementById('phoneLoginError').innerText = 'Incorrect password'; return; }
-        currentUserKey = fullPhone;
-        updateUserDisplay(user);
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('appContainer').classList.remove('hidden');
-        loadUserNotes();
-    }
-
-    // Email Login
-    function handleEmailLogin() {
-        const email = document.getElementById('loginEmail').value.trim();
-        const pwd = document.getElementById('loginEmailPassword').value;
-        document.getElementById('emailLoginError').innerText = '';
-        if(!email) { document.getElementById('emailLoginError').innerText = 'Please enter your email address'; return; }
-        if(!pwd) { document.getElementById('emailLoginError').innerText = 'Please enter your password'; return; }
-        if(!isValidEmail(email)) { document.getElementById('emailLoginError').innerText = 'Please enter a valid email address'; return; }
-        const users = getUsers();
-        let foundKey = null, foundUser = null;
-        for(let ph in users) {
-            if(users[ph].email === email && users[ph].password === pwd) {
-                foundKey = ph;
-                foundUser = users[ph];
-                break;
-            }
-        }
-        if(!foundKey) { document.getElementById('emailLoginError').innerText = 'Invalid email or password'; return; }
-        currentUserKey = foundKey;
-        updateUserDisplay(foundUser);
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('appContainer').classList.remove('hidden');
-        loadUserNotes();
-    }
-
-    function updateUserDisplay(user) {
-        document.getElementById('userPhoneDisplay').innerText = user.countryCode + user.phone;
-        document.getElementById('userEmailDisplay').innerText = user.email;
-        document.getElementById('userNameDisplay').innerText = `${user.firstName} ${user.lastName}`;
-    }
-
-    // Forgot / Reset logic
-    let resetEmail = null;
-    function showForgotPassword() {
-        document.querySelectorAll('#loginPage .form-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById('forgotFormPane').classList.add('active');
-    }
-    function sendResetLink() {
-        const email = document.getElementById('forgotEmail').value.trim();
-        if(!email) { document.getElementById('forgotError').innerText = 'Enter your registered email'; return; }
-        if(!isValidEmail(email)) { document.getElementById('forgotError').innerText = 'Please enter a valid email address'; return; }
-        const users = getUsers();
-        let foundPhone = null;
-        for(let ph in users) {
-            if(users[ph].email === email) {
-                foundPhone = ph;
-                break;
-            }
-        }
-        if(!foundPhone) { document.getElementById('forgotError').innerText = 'No account found with this email'; return; }
-        resetEmail = email;
-        document.querySelectorAll('#loginPage .form-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById('resetFormPane').classList.add('active');
-    }
-    function resetPasswordConfirm() {
-        if(!resetEmail) {
-            document.getElementById('resetError').innerText = 'Session expired. Please request a new reset link.';
-            setTimeout(() => { showLoginPane(); }, 2000);
-            return;
-        }
-        const newPwd = document.getElementById('newPassword').value;
-        const confirm = document.getElementById('confirmNewPassword').value;
-        if(!newPwd || newPwd.length<6) { document.getElementById('resetError').innerText = 'Password must be at least 6 characters'; return; }
-        if(newPwd !== confirm) { document.getElementById('resetError').innerText = 'Passwords do not match'; return; }
-        const users = getUsers();
-        let foundPhone = null;
-        for(let ph in users) {
-            if(users[ph].email === resetEmail) {
-                foundPhone = ph;
-                break;
-            }
-        }
-        if(foundPhone) {
-            users[foundPhone].password = newPwd;
-            saveUsers(users);
-            resetEmail = null;
-            alert('Password reset successful! Please login with your new password.');
-            showLoginPane();
-        } else {
-            document.getElementById('resetError').innerText = 'Error: user not found';
-        }
-    }
-
-    function showLoginPane() {
-        document.querySelectorAll('#loginPage .form-pane').forEach(p => p.classList.remove('active'));
-        const activeTab = document.querySelector('#loginPage .login-tab.active').getAttribute('data-tab');
-        if(activeTab === 'phone') document.getElementById('phoneLoginPane').classList.add('active');
-        else document.getElementById('emailLoginPane').classList.add('active');
-        document.getElementById('phoneLoginError').innerText = '';
-        document.getElementById('emailLoginError').innerText = '';
-        document.getElementById('forgotError').innerText = '';
-        document.getElementById('resetError').innerText = '';
-    }
-
-    // Page switching functions
-    function showSignupPage() {
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('signupPage').classList.remove('hidden');
-        clearSignupFields();
-    }
-    function showLoginPage() {
-        document.getElementById('signupPage').classList.add('hidden');
-        document.getElementById('loginPage').classList.remove('hidden');
-        showLoginPane();
-        clearLoginFields();
-    }
-    function clearSignupFields() {
-        document.getElementById('regFirstName').value = '';
-        document.getElementById('regLastName').value = '';
-        document.getElementById('regCountryCode').value = '+880';
-        document.getElementById('regPhoneNumber').value = '';
-        document.getElementById('regEmail').value = '';
-        document.getElementById('regPassword').value = '';
-        document.getElementById('regConfirmPassword').value = '';
-        document.getElementById('regError').innerText = '';
-        document.getElementById('strengthFill').style.width = '0%';
-        document.getElementById('strengthText').innerText = '';
-    }
-    function clearLoginFields() {
-        document.getElementById('loginPhoneNumber').value = '';
-        document.getElementById('loginPhonePassword').value = '';
-        document.getElementById('loginEmail').value = '';
-        document.getElementById('loginEmailPassword').value = '';
-        document.getElementById('phoneLoginError').innerText = '';
-        document.getElementById('emailLoginError').innerText = '';
-        document.getElementById('forgotEmail').value = '';
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmNewPassword').value = '';
-    }
-
-    document.querySelectorAll('#loginPage .login-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('#loginPage .login-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            document.querySelectorAll('#loginPage .form-pane').forEach(pane => pane.classList.remove('active'));
-            const tabId = tab.getAttribute('data-tab');
-            if(tabId === 'phone') document.getElementById('phoneLoginPane').classList.add('active');
-            else document.getElementById('emailLoginPane').classList.add('active');
-            document.getElementById('phoneLoginError').innerText = '';
-            document.getElementById('emailLoginError').innerText = '';
-        });
-    });
-
-    // Notes logic (same as before)
-    function getNotesKey() { return `notes_${currentUserKey}`; }
-    function loadUserNotes() {
-        const stored = localStorage.getItem(getNotesKey());
-        if(stored) notes = JSON.parse(stored);
-        else {
             notes = [{
                 id: Date.now().toString(),
-                title: "Welcome to AeroNote Pro! 🚀",
-                content: "<p><strong>Your ultimate secure workspace</strong><br>✅ Dual login: Phone or Email<br>✅ Password strength & reset via email<br>✅ TXT backup & restore<br>✅ Rich text & images<br>✅ Pin & favorite notes</p>",
+                title: "Welcome to AeroNote! 🚀",
+                content: "<p><strong>Your ultimate simple workspace</strong><br>✅ Rich text & images<br>✅ Pin & favorite notes<br>✅ Search & filters<br>✅ TXT backup & restore<br>✅ Auto-save</p>",
                 tags: "welcome",
                 isPinned: true,
                 isFavorite: true,
@@ -1043,9 +486,11 @@
         if(notes.length) openNote(notes[0].id);
         else document.getElementById('blankState').style.display = 'flex';
     }
+
     function saveNotes() {
-        if(currentUserKey) localStorage.setItem(getNotesKey(), JSON.stringify(notes));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
     }
+
     function renderNotes() {
         const notesListEl = document.getElementById('notesList');
         const query = document.getElementById('searchInput').value.toLowerCase();
@@ -1080,7 +525,9 @@
             notesListEl.appendChild(div);
         });
     }
+
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+
     function createNewNote() {
         const newNote = { id: Date.now().toString(), title: "", content: "", tags: "", isPinned: false, isFavorite: false, updatedAt: Date.now() };
         notes.unshift(newNote);
@@ -1088,6 +535,7 @@
         openNote(newNote.id);
         document.getElementById('editorTitle').focus();
     }
+
     function openNote(id) {
         activeNoteId = id;
         const note = notes.find(n => n.id === id);
@@ -1101,6 +549,7 @@
         renderNotes();
         if(window.innerWidth <= 900) document.getElementById('editorPane').classList.add('open');
     }
+
     function saveActiveNoteData() {
         if(!activeNoteId) return;
         const idx = notes.findIndex(n => n.id === activeNoteId);
@@ -1114,6 +563,7 @@
         setTimeout(() => { if(document.getElementById('syncStatus')) document.getElementById('syncStatus').innerHTML = '<i class="fa-solid fa-cloud-check"></i> Synced'; }, 1500);
         renderNotes();
     }
+
     function setupAutoSave() {
         const fields = ['editorTitle', 'editorContent', 'editorTags'];
         fields.forEach(id => {
@@ -1125,6 +575,7 @@
             });
         });
     }
+
     function toggleActiveNoteProp(prop) {
         if(!activeNoteId) return;
         const note = notes.find(n => n.id === activeNoteId);
@@ -1133,6 +584,7 @@
         saveNotes();
         openNote(activeNoteId);
     }
+
     function deleteActiveNote() {
         if(!activeNoteId || !confirm("Delete this note permanently?")) return;
         notes = notes.filter(n => n.id !== activeNoteId);
@@ -1142,6 +594,7 @@
         renderNotes();
         if(window.innerWidth <= 900) closeEditorMobile();
     }
+
     function setFilter(filter, btn) {
         currentFilter = filter;
         document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
@@ -1151,6 +604,7 @@
         renderNotes();
         if(window.innerWidth <= 900) toggleSidebar();
     }
+
     function formatText(cmd, val=null) {
         const editor = document.getElementById('editorContent');
         editor.focus();
@@ -1162,6 +616,7 @@
         clearTimeout(typingTimer);
         typingTimer = setTimeout(saveActiveNoteData, typingDelay);
     }
+
     function insertLinkPrompt() { let url = prompt("Enter URL:"); if(url) formatText('createLink', url); }
     function triggerImageUpload() { document.getElementById('imageUploadInput').click(); }
     function handleImageUpload(e) {
@@ -1173,15 +628,18 @@
         }
         e.target.value = '';
     }
+
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeEditorMobile() { document.getElementById('editorPane').classList.remove('open'); activeNoteId = null; renderNotes(); }
+
+    // TXT Backup & Restore
     function stripHtml(html) { let d = document.createElement('div'); d.innerHTML = html; return d.textContent || d.innerText || ''; }
     function exportAllAsTxt() {
         const content = notes.map(n => `===== ${n.title} =====\nDate: ${new Date(n.updatedAt).toLocaleString()}\nTags: ${n.tags}\nPinned: ${n.isPinned} | Favorite: ${n.isFavorite}\n\n${stripHtml(n.content)}\n\n`).join('\n---\n\n');
         const blob = new Blob([content], {type: 'text/plain'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `AeroNote_${currentUserKey}_backup.txt`;
+        a.download = `AeroNote_backup.txt`;
         a.click();
         URL.revokeObjectURL(a.href);
         alert("All notes exported as .txt file.");
@@ -1236,23 +694,9 @@
         reader.readAsText(file);
         event.target.value = '';
     }
-    function logout() {
-        currentUserKey = null;
-        localStorage.removeItem('currentUserKey'); // optional, but we keep in memory only
-        document.getElementById('appContainer').classList.add('hidden');
-        document.getElementById('loginPage').classList.remove('hidden');
-        showLoginPane();
-        clearLoginFields();
-    }
 
-    // Check for existing session on page load
     window.onload = () => {
-        // Check if there is a stored user? We'll just show login page always, but you could store last user.
-        // To keep it simple, we always start at login.
-        document.getElementById('appContainer').classList.add('hidden');
-        document.getElementById('signupPage').classList.add('hidden');
-        document.getElementById('loginPage').classList.remove('hidden');
-        showLoginPane();
+        loadNotes();
         setupAutoSave();
     };
 </script>
